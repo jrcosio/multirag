@@ -1,0 +1,18 @@
+{
+  "2.2_Informe_sobre_modelos_y_enfoques_de_procesamiento_multimodal_para_el_desarrollo_de_soluciones_de_MLLM__2_.pdf": {
+    "status": "processed",
+    "file_hash": "6e4875e450842a93870799653c59106ebf35fa568b5b4562d3aadfb8b9dc2428",
+    "last_job_id": "6b728c08-027c-404a-a8c2-f21346955e2d",
+    "last_error": null,
+    "last_indexed_at": "2026-04-14T13:17:49.631728+00:00",
+    "updated_at": "2026-04-14T13:17:49.631728+00:00"
+  },
+  "embrague_audi_3.pdf": {
+    "status": "processed",
+    "file_hash": "ef001f005d12d5a86a138ecf15bee85d1646e7391dccb97bedd870183d3d2e1b",
+    "last_job_id": "fbae25fa-853e-4f8b-ba9b-f09352e9d77a",
+    "last_error": null,
+    "last_indexed_at": "2026-04-14T13:40:15.299234+00:00",
+    "updated_at": "2026-04-14T13:40:15.300235+00:00"
+  }
+}

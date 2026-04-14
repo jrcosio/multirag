@@ -56,6 +56,7 @@ def ingest_documents(
     for file_path in file_bar:
         try:
             relative_path = str(file_path.relative_to(settings.doc_raw_dir)).replace("\\", "/")
+            _emit(on_event, "file_started", relative_path)
             file_hash = sha256_file(file_path)
             if not force_reindex and state.is_processed(relative_path, file_hash):
                 skipped += 1

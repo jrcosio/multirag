@@ -29,7 +29,35 @@ Edita `.env` y coloca tu `GEMINI_API_KEY`.
 uv sync
 ```
 
-## 4) Cargar documentos
+## 4) Ejecutar API FastAPI
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+Documentacion interactiva:
+
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
+
+Endpoints principales:
+
+- `POST /api/v1/documents/upload` para subir PDFs
+- `POST /api/v1/jobs/index` para crear job asincrono de indexacion
+- `GET /api/v1/jobs/{job_id}` para monitorear progreso
+- `POST /api/v1/query` para inferencia
+- `DELETE /api/v1/documents/{document_id}` para borrar un PDF concreto
+- `DELETE /api/v1/documents?confirm=true` para borrar todo
+
+Estado por documento en `GET /api/v1/documents`:
+
+- `not_started`: aun no se inicio indexacion del hash actual.
+- `queued`: documento encolado en un job.
+- `processing`: documento en procesamiento activo.
+- `processed`: indexacion completada para el hash actual.
+- `failed`: fallo en la ultima indexacion del documento.
+
+## 5) Cargar documentos
 
 Coloca archivos en `doc_raw/`.
 
@@ -71,13 +99,13 @@ Ajuste adaptativo de paginas PDF:
 - Si no detecta tablas, usa `RAG_PDF_PAGES_PER_CHUNK` (por defecto 1).
 - Si `RAG_PDF_ADAPTIVE_DEBUG=true`, imprime en la ingesta la estrategia elegida y su motivo.
 
-## 5) Ingesta manual
+## 6) Ingesta manual
 
 ```bash
 uv run python main.py ingest
 ```
 
-## 6) Preguntar al RAG
+## 7) Preguntar al RAG
 
 ```bash
 uv run python main.py ask "Que informacion hay sobre el documento X?"
@@ -85,13 +113,13 @@ uv run python main.py ask "Que informacion hay sobre el documento X?"
 
 El comando `ask` ejecuta primero la ingesta incremental automaticamente.
 
-## 7) Modo interactivo
+## 8) Modo interactivo
 
 ```bash
 uv run python main.py
 ```
 
-## 8) Limpieza de base vectorial
+## 9) Limpieza de base vectorial
 
 Puedes limpiar datos indexados de dos formas:
 
@@ -118,7 +146,7 @@ Comportamiento importante:
 - `clean --source` elimina vectores de esa fuente y su entrada en `.rag_state/processed.json`.
 - `clean --all` elimina toda la coleccion de Qdrant y reinicia `.rag_state/processed.json`.
 
-## 9) Salida visual (colores y progreso)
+## 10) Salida visual (colores y progreso)
 
 Por defecto, la CLI usa una salida visual sobria:
 
@@ -135,7 +163,7 @@ uv run python main.py --no-color --no-progress ask "Tu pregunta"
 
 `--no-progress` es util para logs limpios en CI.
 
-## 10) Modo resiliente ante 503
+## 11) Modo resiliente ante 503
 
 La ingesta funciona en modo resiliente:
 
@@ -159,7 +187,7 @@ Si sigues viendo `503 UNAVAILABLE`, prueba:
 - Bajar `RAG_CHUNK_OVERLAP`
 - Reintentar tras unos segundos
 
-## 11) Como funciona el control incremental
+## 12) Como funciona el control incremental
 
 - Se guarda estado en `.rag_state/processed.json`
 - Se calcula hash SHA-256 por archivo

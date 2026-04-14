@@ -1,0 +1,10 @@
+{
+  "demo.pdf": {
+    "status": "processed",
+    "file_hash": "abc",
+    "last_job_id": "975eea2d-bbaf-4a65-be3a-9b902a766f09",
+    "last_error": null,
+    "last_indexed_at": "2026-04-14T12:56:11.979719+00:00",
+    "updated_at": "2026-04-14T12:56:11.979719+00:00"
+  }
+}
