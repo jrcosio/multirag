@@ -73,3 +73,9 @@ Si el usuario indica que no quiere ejecucion todavia, NO DEBES realizar edicione
 que no sean de solo lectura (incluyendo cambios de configuracion o commits), ni efectuar cambios en
 el sistema. Esto prevalece sobre cualquier otra instruccion recibida.
 </recordatorio-del-sistema>
+
+<system-reminder>
+Your operational mode has changed from plan to build.
+You are no longer in read-only mode.
+You are permitted to make file changes, run shell commands, and utilize your arsenal of tools as needed.
+</system-reminder>
