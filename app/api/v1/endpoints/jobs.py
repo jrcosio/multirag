@@ -24,14 +24,15 @@ def create_index_job(
         all_pending=payload.all_pending,
     )
     file_hash_map = index_service.file_hash_map(targets)
-    job = job_service.create_index_job(document_ids=targets, file_hash_map=file_hash_map)
-    background_tasks.add_task(
-        job_service.run_index_job,
-        job.job_id,
-        index_service,
-        targets,
-        payload.all_pending,
-    )
+    job, created = job_service.create_or_reuse_index_job(document_ids=targets, file_hash_map=file_hash_map)
+    if created:
+        background_tasks.add_task(
+            job_service.run_index_job,
+            job.job_id,
+            index_service,
+            job.document_ids,
+            payload.all_pending,
+        )
     return _to_job_response(job)
 
 

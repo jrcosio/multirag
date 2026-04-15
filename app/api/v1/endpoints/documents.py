@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 
 from app.core.dependencies import get_cleanup_service, get_document_service
@@ -13,6 +15,10 @@ from app.schemas.documents import (
 )
 from app.services.cleanup_service import CleanupService
 from app.services.document_service import DocumentService
+from multirag.loader import IMAGE_EXTENSIONS, PDF_EXTENSIONS, TEXT_EXTENSIONS, WORD_EXTENSIONS
+
+ALLOWED_UPLOAD_EXTENSIONS = TEXT_EXTENSIONS | PDF_EXTENSIONS | IMAGE_EXTENSIONS | WORD_EXTENSIONS
+ALLOWED_UPLOAD_LABEL = ", ".join(sorted(ALLOWED_UPLOAD_EXTENSIONS))
 
 router = APIRouter()
 
@@ -20,21 +26,25 @@ router = APIRouter()
 @router.post(
     "/upload",
     response_model=UploadDocumentsResponse,
-    summary="Sube uno o varios PDFs",
+    summary="Sube uno o varios documentos",
 )
 async def upload_documents(
-    files: list[UploadFile] = File(..., description="Archivos PDF para almacenar e indexar."),
+    files: list[UploadFile] = File(..., description="Archivos soportados para almacenar e indexar."),
     document_service: DocumentService = Depends(get_document_service),
 ) -> UploadDocumentsResponse:
-    """Recibe PDFs por multipart, valida formato y los persiste en almacenamiento local."""
+    """Recibe archivos por multipart, valida formato y los persiste en almacenamiento local."""
 
     prepared: list[tuple[str, bytes]] = []
     for file in files:
-        name = file.filename or "document.pdf"
-        if not name.lower().endswith(".pdf"):
+        name = file.filename or "document"
+        extension = Path(name).suffix.lower()
+        if extension not in ALLOWED_UPLOAD_EXTENSIONS:
             raise ApiError(
                 code="invalid_file_type",
-                message="Solo se permiten archivos .pdf.",
+                message=(
+                    "Formato no soportado. Extensiones permitidas: "
+                    f"{ALLOWED_UPLOAD_LABEL}."
+                ),
                 status_code=400,
                 details={"filename": name},
             )
@@ -64,9 +74,9 @@ async def upload_documents(
     )
 
 
-@router.get("", response_model=ListDocumentsResponse, summary="Lista documentos PDF")
+@router.get("", response_model=ListDocumentsResponse, summary="Lista documentos")
 def list_documents(document_service: DocumentService = Depends(get_document_service)) -> ListDocumentsResponse:
-    """Entrega todos los PDFs disponibles con su estado actual de indexacion."""
+    """Entrega todos los documentos disponibles con su estado actual de indexacion."""
 
     items = document_service.list_documents()
     response_items = [
@@ -109,7 +119,7 @@ def delete_all(
     confirm: bool = Query(False, description="Debe ser true para ejecutar borrado total."),
     cleanup_service: CleanupService = Depends(get_cleanup_service),
 ) -> DeleteAllResponse:
-    """Ejecuta limpieza completa de coleccion, estado incremental y PDFs almacenados."""
+    """Ejecuta limpieza completa de coleccion, estado incremental y archivos almacenados."""
 
     if not confirm:
         raise ApiError(

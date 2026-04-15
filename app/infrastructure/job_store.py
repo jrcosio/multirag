@@ -70,3 +70,12 @@ class JobStore:
 
         with self._lock:
             self._items[job.job_id] = job
+
+    def is_active(self, job_id: str) -> bool:
+        """Indica si un job existe y sigue en ejecucion o en cola."""
+
+        with self._lock:
+            job = self._items.get(job_id)
+            if not job:
+                return False
+            return job.status in {JobStatus.queued, JobStatus.running}

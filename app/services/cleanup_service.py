@@ -39,12 +39,12 @@ class CleanupService:
         }
 
     def delete_all(self) -> dict[str, int | bool]:
-        """Borra coleccion, estado incremental y todos los PDFs gestionados por la API."""
+        """Borra coleccion, estado incremental y todos los documentos gestionados por la API."""
 
         collection_deleted = self.store.delete_collection()
         self.state.clear()
         self.status_store.clear()
-        files_deleted = self.storage.delete_all_pdfs()
+        files_deleted = self.storage.delete_all_documents()
         return {
             "collection_deleted": collection_deleted,
             "state_cleared": True,

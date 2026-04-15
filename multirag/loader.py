@@ -4,6 +4,7 @@ import hashlib
 import io
 from pathlib import Path
 
+from docx import Document as DocxDocument
 from pypdf import PdfReader, PdfWriter
 
 from multirag.types import MediaSegment, RawDocument
@@ -11,6 +12,7 @@ from multirag.types import MediaSegment, RawDocument
 TEXT_EXTENSIONS = {".txt", ".md", ".markdown", ".py", ".json", ".csv", ".html", ".xml"}
 PDF_EXTENSIONS = {".pdf"}
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+WORD_EXTENSIONS = {".docx"}
 
 
 def supported_files(root: Path) -> list[Path]:
@@ -24,7 +26,7 @@ def supported_files(root: Path) -> list[Path]:
     for file_path in root.rglob("*"):
         if not file_path.is_file():
             continue
-        if file_path.suffix.lower() in TEXT_EXTENSIONS | PDF_EXTENSIONS | IMAGE_EXTENSIONS:
+        if file_path.suffix.lower() in TEXT_EXTENSIONS | PDF_EXTENSIONS | IMAGE_EXTENSIONS | WORD_EXTENSIONS:
             paths.append(file_path)
 
     return sorted(paths)
@@ -58,6 +60,26 @@ def read_pdf(path: Path) -> str:
     """Entrega una version textual unificada del PDF para el flujo de fallback."""
 
     return "\n\n".join(read_pdf_pages(path)).strip()
+
+
+def read_docx(path: Path) -> str:
+    """Extrae texto de documentos DOCX para indexacion textual."""
+
+    doc = DocxDocument(str(path))
+    chunks: list[str] = []
+
+    for paragraph in doc.paragraphs:
+        text = paragraph.text.strip()
+        if text:
+            chunks.append(text)
+
+    for table in doc.tables:
+        for row in table.rows:
+            cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+            if cells:
+                chunks.append(" | ".join(cells))
+
+    return "\n\n".join(chunks).strip()
 
 
 def read_pdf_pages(path: Path) -> list[str]:
@@ -135,6 +157,9 @@ def build_raw_document(path: Path, root: Path, image_summary: str | None = None)
     if ext in TEXT_EXTENSIONS:
         text = read_text_file(path)
         modality = "text"
+    elif ext in WORD_EXTENSIONS:
+        text = read_docx(path)
+        modality = "docx"
     elif ext in PDF_EXTENSIONS:
         text = read_pdf(path)
         modality = "pdf"

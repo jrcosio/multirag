@@ -136,6 +136,44 @@ def test_upload_and_list_documents() -> None:
     assert listed.json()["total"] >= 1
 
 
+def test_upload_accepts_multiple_supported_formats() -> None:
+    client = _build_client()
+    response = client.post(
+        "/api/v1/documents/upload",
+        files=[
+            ("files", ("nota.txt", b"hola", "text/plain")),
+            ("files", ("config.json", b'{"ok": true}', "application/json")),
+            ("files", ("imagen.png", b"\x89PNG\r\n\x1a\n", "image/png")),
+            (
+                "files",
+                (
+                    "informe.docx",
+                    b"PK\x03\x04fake-docx",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ),
+            ),
+        ],
+    )
+    assert response.status_code == 200
+    uploaded_ids = [item["document_id"] for item in response.json()["uploaded"]]
+    assert "nota.txt" in uploaded_ids
+    assert "config.json" in uploaded_ids
+    assert "imagen.png" in uploaded_ids
+    assert "informe.docx" in uploaded_ids
+
+
+def test_upload_rejects_doc_extension() -> None:
+    client = _build_client()
+    response = client.post(
+        "/api/v1/documents/upload",
+        files={"files": ("legacy.doc", b"fake", "application/msword")},
+    )
+    assert response.status_code == 400
+    body = response.json()
+    assert body["code"] == "invalid_file_type"
+    assert "permitidas" in body["message"]
+
+
 def test_create_index_job_and_check_status() -> None:
     client = _build_client()
     create = client.post("/api/v1/jobs/index", json={"all_pending": True})

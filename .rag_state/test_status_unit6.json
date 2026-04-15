@@ -1,0 +1,18 @@
+{
+  "active.pdf": {
+    "status": "queued",
+    "file_hash": "hash-active",
+    "last_job_id": "291f3d11-8101-4623-83a1-146d6996f447",
+    "last_error": null,
+    "last_indexed_at": null,
+    "updated_at": "2026-04-15T07:01:20.549316+00:00"
+  },
+  "new.pdf": {
+    "status": "queued",
+    "file_hash": "hash-new",
+    "last_job_id": "cd9b7ed9-2163-4337-9e3d-30cb75649dee",
+    "last_error": null,
+    "last_indexed_at": null,
+    "updated_at": "2026-04-15T07:01:20.551316+00:00"
+  }
+}

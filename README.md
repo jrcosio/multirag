@@ -42,11 +42,11 @@ Documentacion interactiva:
 
 Endpoints principales:
 
-- `POST /api/v1/documents/upload` para subir PDFs
+- `POST /api/v1/documents/upload` para subir documentos soportados
 - `POST /api/v1/jobs/index` para crear job asincrono de indexacion
 - `GET /api/v1/jobs/{job_id}` para monitorear progreso
 - `POST /api/v1/query` para inferencia
-- `DELETE /api/v1/documents/{document_id}` para borrar un PDF concreto
+- `DELETE /api/v1/documents/{document_id}` para borrar un documento concreto
 - `DELETE /api/v1/documents?confirm=true` para borrar todo
 
 Estado por documento en `GET /api/v1/documents`:
@@ -64,6 +64,7 @@ Coloca archivos en `doc_raw/`.
 Formatos soportados:
 
 - Texto: `.txt`, `.md`, `.json`, `.csv`, `.html`, `.xml`, `.py`
+- Word: `.docx` (`.doc` no soportado)
 - PDF: `.pdf`
 - Imagen: `.png`, `.jpg`, `.jpeg`, `.webp`, `.bmp`
 

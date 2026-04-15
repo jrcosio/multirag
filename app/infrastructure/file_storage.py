@@ -5,12 +5,14 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from multirag.loader import sha256_file
+from multirag.loader import IMAGE_EXTENSIONS, PDF_EXTENSIONS, TEXT_EXTENSIONS, WORD_EXTENSIONS, sha256_file
+
+SUPPORTED_FILE_EXTENSIONS = TEXT_EXTENSIONS | PDF_EXTENSIONS | IMAGE_EXTENSIONS | WORD_EXTENSIONS
 
 
 @dataclass
 class StoredDocument:
-    """Representa un PDF almacenado localmente y listo para indexar."""
+    """Representa un documento almacenado localmente y listo para indexar."""
 
     document_id: str
     filename: str
@@ -20,26 +22,26 @@ class StoredDocument:
 
 
 class FileStorage:
-    """Administra el almacenamiento local de documentos PDF para la API."""
+    """Administra el almacenamiento local de documentos soportados por la API."""
 
     def __init__(self, root_dir: Path) -> None:
         self.root_dir = root_dir
         self.root_dir.mkdir(parents=True, exist_ok=True)
 
-    def save_pdf(self, filename: str, content: bytes) -> StoredDocument:
-        """Persiste un PDF en el directorio de documentos y retorna su metadata."""
+    def save_document(self, filename: str, content: bytes) -> StoredDocument:
+        """Persiste un documento en el directorio de datos y retorna su metadata."""
 
         safe_name = self._sanitize_filename(filename)
         target = self.root_dir / safe_name
         target.write_bytes(content)
         return self._to_stored(target)
 
-    def list_pdfs(self) -> list[StoredDocument]:
-        """Lista todos los PDFs disponibles para indexacion o gestion."""
+    def list_documents(self) -> list[StoredDocument]:
+        """Lista todos los documentos soportados para indexacion o gestion."""
 
         docs: list[StoredDocument] = []
-        for path in self.root_dir.rglob("*.pdf"):
-            if path.is_file():
+        for path in self.root_dir.rglob("*"):
+            if path.is_file() and path.suffix.lower() in SUPPORTED_FILE_EXTENSIONS:
                 docs.append(self._to_stored(path))
         return sorted(docs, key=lambda item: item.document_id)
 
@@ -57,12 +59,12 @@ class FileStorage:
         path.unlink()
         return True
 
-    def delete_all_pdfs(self) -> int:
-        """Elimina todos los PDFs almacenados y devuelve cuantos borro."""
+    def delete_all_documents(self) -> int:
+        """Elimina todos los documentos soportados y devuelve cuantos borro."""
 
         count = 0
-        for path in list(self.root_dir.rglob("*.pdf")):
-            if path.is_file():
+        for path in list(self.root_dir.rglob("*")):
+            if path.is_file() and path.suffix.lower() in SUPPORTED_FILE_EXTENSIONS:
                 path.unlink()
                 count += 1
         return count
@@ -85,6 +87,4 @@ class FileStorage:
 
         clean = filename.replace("\\", "/").split("/")[-1].strip()
         clean = re.sub(r"[^A-Za-z0-9._-]", "_", clean)
-        if not clean.lower().endswith(".pdf"):
-            clean = f"{clean}.pdf"
-        return clean or "document.pdf"
+        return clean or "document"

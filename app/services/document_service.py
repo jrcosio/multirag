@@ -9,7 +9,7 @@ from multirag.state import ProcessedState
 
 
 class DocumentService:
-    """Orquesta operaciones de carga y consulta de documentos PDF."""
+    """Orquesta operaciones de carga y consulta de documentos."""
 
     def __init__(self, storage: FileStorage, state: ProcessedState, status_store: DocumentStatusStore) -> None:
         self.storage = storage
@@ -17,11 +17,11 @@ class DocumentService:
         self.status_store = status_store
 
     def upload_documents(self, files: list[tuple[str, bytes]]) -> list[StoredDocument]:
-        """Guarda multiples PDFs y devuelve metadata de los archivos persistidos."""
+        """Guarda multiples archivos y devuelve metadata de los persistidos."""
 
         uploaded: list[StoredDocument] = []
         for filename, content in files:
-            item = self.storage.save_pdf(filename=filename, content=content)
+            item = self.storage.save_document(filename=filename, content=content)
             self.status_store.set_status(
                 document_id=item.document_id,
                 status="not_started",
@@ -34,7 +34,7 @@ class DocumentService:
     def list_documents(self) -> list[dict]:
         """Lista documentos junto con su estado de indexacion incremental."""
 
-        items = self.storage.list_pdfs()
+        items = self.storage.list_documents()
         out: list[dict] = []
         for doc in items:
             indexed = self.state.is_processed(doc.document_id, doc.file_hash)

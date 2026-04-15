@@ -1,0 +1,10 @@
+{
+  "demo.pdf": {
+    "status": "queued",
+    "file_hash": "abc123",
+    "last_job_id": "84e4fb8d-c6a9-4ecd-a7a4-bbc217fd92a0",
+    "last_error": null,
+    "last_indexed_at": null,
+    "updated_at": "2026-04-15T07:01:20.533354+00:00"
+  }
+}

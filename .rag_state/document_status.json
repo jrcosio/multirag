@@ -14,5 +14,13 @@
     "last_error": null,
     "last_indexed_at": "2026-04-14T13:40:15.299234+00:00",
     "updated_at": "2026-04-14T13:40:15.300235+00:00"
+  },
+  "FASTTRACK-2026-OFICIAL.docx": {
+    "status": "queued",
+    "file_hash": "f1a27b582771509292a4b8a7b44deb8b439532fa5387c98a515843dc5e2ca492",
+    "last_job_id": "b3880ee0-6f03-42e7-903f-fa78870e8de2",
+    "last_error": null,
+    "last_indexed_at": null,
+    "updated_at": "2026-04-15T06:38:28.963552+00:00"
   }
 }

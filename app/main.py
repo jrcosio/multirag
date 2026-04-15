@@ -18,7 +18,7 @@ def create_app() -> FastAPI:
         title="MultiRAG API",
         version="1.0.0",
         description=(
-            "API para ingesta de PDFs, vectorizacion asincrona y consultas RAG sobre Qdrant + Gemini."
+            "API para ingesta multimodal, vectorizacion asincrona y consultas RAG sobre Qdrant + Gemini."
         ),
     )
     app.include_router(api_router, prefix="/api/v1")

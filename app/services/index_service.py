@@ -74,7 +74,7 @@ class IndexService:
                 )
             return sorted(set(document_ids))
 
-        docs = self.storage.list_pdfs()
+        docs = self.storage.list_documents()
         if all_pending:
             pending: list[str] = []
             for doc in docs:
@@ -86,5 +86,5 @@ class IndexService:
     def file_hash_map(self, document_ids: list[str]) -> dict[str, str]:
         """Devuelve hash actual por documento para trazabilidad de estado por job."""
 
-        by_id = {doc.document_id: doc.file_hash for doc in self.storage.list_pdfs()}
+        by_id = {doc.document_id: doc.file_hash for doc in self.storage.list_documents()}
         return {doc_id: by_id.get(doc_id, "") for doc_id in document_ids}
